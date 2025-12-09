@@ -38,15 +38,33 @@ class TXTConverter(BaseConverter):
             
             print(f"Reading text file: {self.input_path}")
             
-            # Use a pattern that matches any whitespace
-            # This includes spaces, tabs, and multiple spaces
-            # '\s+' is a regular expression that matches one or more whitespace characters
-            delimiter = '\s+'
-            
-            # Reads the text file into a pandas DataFrame
-            # sep=delimiter tells pandas what character separates the columns
-            # engine='python' is more flexible with different delimiters
-            df = pd.read_csv(self.input_path, sep=delimiter, engine='python')
+            # Try to parse the text file as structured data first (whitespace-delimited)
+            # '\\s+' is a regular expression that matches one or more whitespace characters
+            delimiter = '\\s+'
+            df = None
+            try:
+                df = pd.read_csv(self.input_path, sep=delimiter, engine='python')
+            except Exception:
+                # If pandas cannot parse the file as structured data, fall back to plain text
+                df = None
+
+            # Fallback: treat the file as unstructured plain text and split into lines
+            if df is None or df.empty:
+                try:
+                    with open(self.input_path, 'r', encoding='utf-8') as f:
+                        content = f.read()
+                except Exception:
+                    # Try reading with locale/default encoding if utf-8 fails
+                    with open(self.input_path, 'r', encoding='latin-1') as f:
+                        content = f.read()
+
+                # Split into lines; keep non-empty lines to make CSV/XLSX rows
+                lines = content.splitlines()
+                if len(lines) == 0:
+                    print("Warning: input TXT is empty")
+                    df = pd.DataFrame({'text': []})
+                else:
+                    df = pd.DataFrame({'text': lines})
             
             # Extracts the file extension from the output path
             # For example: 'myfile.csv' -> '.csv'
@@ -72,7 +90,7 @@ class TXTConverter(BaseConverter):
                 print("Converting to JSON format...")
                 # orient='records' means each row becomes a separate object
                 # indent=2 makes the JSON file readable with proper indentation
-                df.to_json(output_path, orient='records', indent=2)
+                df.to_json(output_path, orient='records', indent=2, force_ascii=False)
                 
             else:
                 # If the file extension is not supported, show an error
