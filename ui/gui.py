@@ -5,8 +5,6 @@ import threading
 import os
 from pathlib import Path
 import sys
-
-# Add parent directory to path to import converters
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from converters.csv_converter import CSVConverter
@@ -73,22 +71,20 @@ class FileConverterGUI:
         self.setup_ui()
     
     def setup_styles(self):
-        """Configure all style settings for modern appearance."""
-        # Configure frame styles
+        """Configure all style settings for GUI"""
         self.style.configure("TFrame", background=self.bg_primary)
-        # Card frames should be visually flat and match primary for minimalism
         self.style.configure("Card.TFrame", background=self.bg_primary, relief="flat")
         
-        # Configure label styles
+        # Label styles
         self.style.configure("TLabel", background=self.bg_primary, foreground=self.text_primary, font=(self.font_family, 10))
         self.style.configure("Title.TLabel", font=(self.font_family, 18, "bold"), foreground=self.text_primary)
         self.style.configure("Header.TLabel", font=(self.font_family, 11, "bold"), foreground=self.text_primary)
         self.style.configure("Subtitle.TLabel", font=(self.font_family, 9), foreground=self.text_muted)
-        # LabelFrame styles to avoid default gray panels
+        # LabelFrame styles to rid of default grey panels
         self.style.configure("TLabelframe", background=self.bg_primary)
         self.style.configure("TLabelframe.Label", background=self.bg_primary, foreground=self.text_primary, font=(self.font_family, 11, "bold"))
         
-        # Configure button styles
+        # Button styles
         self.style.configure("Accent.TButton", font=(self.font_family, 10, "bold"))
         self.style.configure("Secondary.TButton", font=(self.font_family, 10))
         
@@ -222,8 +218,6 @@ class FileConverterGUI:
         # Input file with custom styling
         self.input_file_label = tk.Label(file_section, text="Input File:", font=(self.font_family, 10, "bold"), bg=self.bg_primary, fg=self.text_primary)
         self.input_file_label.pack(anchor=tk.W, pady=(0, 5))
-        
-        # input/output frames use primary background and subtle border for minimalism
         self.input_frame = tk.Frame(file_section, bg=self.bg_primary, highlightthickness=1, highlightbackground=self.border_color)
         self.input_frame.pack(fill=tk.X, pady=(0, 10))
         
@@ -366,7 +360,7 @@ class FileConverterGUI:
         self.convert_button.pack(side=tk.LEFT, padx=(0, 10))
         self.convert_button.bind("<Enter>", lambda e: self.convert_button.config(bg=self.accent_hover))
         self.convert_button.bind("<Leave>", lambda e: self.convert_button.config(bg=self.accent_color))
-        
+        # Clear button
         clear_button = tk.Button(
             button_frame,
             text="🗑️ Clear",
@@ -383,7 +377,8 @@ class FileConverterGUI:
         clear_button.pack(side=tk.LEFT, padx=(0, 10))
         clear_button.bind("<Enter>", lambda e: clear_button.config(fg=self.text_primary))
         clear_button.bind("<Leave>", lambda e: clear_button.config(fg=self.text_muted))
-        
+
+        # Exit button
         exit_button = tk.Button(
             button_frame,
             text="❌ Exit",
@@ -401,7 +396,6 @@ class FileConverterGUI:
         exit_button.bind("<Enter>", lambda e: exit_button.config(fg=self.text_primary))
         exit_button.bind("<Leave>", lambda e: exit_button.config(fg=self.text_muted))
 
-        # Save references for dynamic theme updates
         self.clear_button = clear_button
         self.exit_button = exit_button
 
